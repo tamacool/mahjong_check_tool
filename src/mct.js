@@ -1,8 +1,19 @@
+/**
+ * mahjong_check_tool
+ * github   https://github.com/tamacool/mahjong_check_tool
+ */
+
+/**
+ * htmlページのtableタグのElementオブジェクトを配列で格納
+ * @type {Array}
+ */
 var tables = [];
 
+/**
+ * htmlページをロード完了後に呼び出される関数
+ */
 window.addEventListener('load', function(){
 
-  //alert("Hello");
   tables = [
     document.querySelector("#tonTable"),
     document.querySelector("#nanTable"),
@@ -23,12 +34,6 @@ window.addEventListener('load', function(){
   }
 })
 
-// 数値用の比較関数を定義
-// これは数字が高い順に並べる。逆は「a - b」
-function compareNumbers(a, b) {
-  return b - a;
-}
-
 //ボタンを押した時の処理
 function rankcheck(){
 
@@ -37,7 +42,7 @@ function rankcheck(){
     while (tables[i].rows.length > 0) tables[i].deleteRow(0);
   }
 
-  var array = [
+  var startPoints = [
     document.getElementById('toncha').value,
     document.getElementById('nancha').value,
     document.getElementById('syacha').value,
@@ -60,7 +65,7 @@ function rankcheck(){
     kyoutaku = 0;
   }
 
-  var ranks = rankcall(array);
+  var ranks = rankcall(startPoints);
 
   //親の場所。pointChangeの最初の引数に仕様。標準は北家スタート(3)
   var oyaPosition = 3;
@@ -150,7 +155,7 @@ function rankcheck(){
 
 
       for(l=0;l<4;l++){
-        var agari = pointChange(oyaPosition,k,l,i,array,honba,kyoutaku);
+        var agari = pointChange(oyaPosition,k,l,i,startPoints,honba,kyoutaku);
 
         var afterRank = rankcall(agari);
 
@@ -342,6 +347,17 @@ function pointChange(oyaPosition,winner,target,pointListIndex,points,honba,kyout
   return afterPoints;
 }
 
+/**
+ * 数値用の比較関数を定義
+ * これは数字が高い順に並べる。逆は「a - b」
+ * @param  {Number} a 比較対象数字1
+ * @param  {Number} b 比較対象数字2
+ * @return {Number}   結果
+ */
+function compareNumbers(a, b) {
+  return b - a;
+}
+
 //順位判定関数
 //点数の入った配列を引数にすると、戻り値は順位の配列
 function rankcall(array){
@@ -422,9 +438,4 @@ function pointList(index,type){
     return points[index][type];
   }
 
-
 }
-
-//console.log(points[0]['display'] + points[0]['oyaron']);
-
-//console.log(pointList(0,'display') + pointList(1,'oyaron'));
