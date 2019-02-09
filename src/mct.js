@@ -14,6 +14,16 @@ var tables = [];
  */
 window.addEventListener('load', function(){
 
+  var paramArray;
+
+  // inputMode = document.querySelector("#mode");
+  // paramArray = getURLParameter();
+  // if(paramArray && paramArray.mode){
+  //   inputMode.value = decodeURIComponent(paramArray.mode);
+  // }
+
+  setDefaultParameter();
+
   tables = [
     document.querySelector("#tonTable"),
     document.querySelector("#nanTable"),
@@ -43,14 +53,14 @@ function rankcheck(){
   }
 
   var startPoints = [
-    document.getElementById('toncha').value,
-    document.getElementById('nancha').value,
-    document.getElementById('syacha').value,
-    document.getElementById('peicha').value
+    document.getElementById('tonchaPoint').value,
+    document.getElementById('nanchaPoint').value,
+    document.getElementById('syachaPoint').value,
+    document.getElementById('peichaPoint').value
   ];
 
   var playerName = [
-    document.getElementById('tonchaName').value,
+    document.getElementById('tonchaPoint').value,
     document.getElementById('nanchaName').value,
     document.getElementById('syachaName').value,
     document.getElementById('peichaName').value
@@ -437,5 +447,61 @@ function pointList(index,type){
   }else{
     return points[index][type];
   }
+
+}
+
+//デフォルト値をURLのパラメータから取得する関数
+function setDefaultParameter(){
+  var idArray = [
+    'tonchaPoint',
+    'nanchaPoint',
+    'syachaPoint',
+    'peichaPoint',
+    'tonchaName',
+    'nenchaName',
+    'syachaName',
+    'peichaName',
+    'honba',
+    'kyoutaku',
+    'mode'
+  ];
+
+  var paramArray = getURLParameter();
+
+  if(paramArray){
+    for (var i = 0, len = idArray.length; i < len; ++i){
+      if(paramArray[idArray[i]]){
+        var element = document.querySelector("#"+idArray[i]);
+        element.value = decodeURIComponent(paramArray[idArray[i]]);
+      }
+    }
+  }
+}
+
+/**
+ * URLパラメータを取得して連想配列で返す
+ * @return {Array} URLパラメータを格納した連想配列
+ */
+function getURLParameter(){
+      //URLパラメータの?を除いた２文字目以降を取得
+  var urlParam = location.search.substring(1),
+      //パラメータを格納する連想配列
+      paramArray = [];
+
+  if(urlParam){
+    //&が含まれていたら&で分割（この時点では=で繋がっている）
+    var params = urlParam.split('&');
+
+    // 用意した配列にパラメータを格納
+    for (i = 0; i < params.length; i++) {
+      var paramItems = params[i].split('=');
+      paramArray[paramItems[0]] = paramItems[1];
+    }
+
+    return paramArray;
+
+  }
+
+  return null;
 
 }
