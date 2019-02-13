@@ -1,8 +1,25 @@
+/**
+ * mahjong_check_tool
+ * github   https://github.com/tamacool/mahjong_check_tool
+ */
+
+/**
+ * htmlページのtableタグのElementオブジェクトを配列で格納
+ * @type {Array}
+ */
 var tables = [];
 
+/**
+ * htmlページをロード完了後に呼び出される関数
+ */
 window.addEventListener('load', function(){
 
-  //alert("Hello");
+  document.querySelector("#linkArea").hidden = true;
+  //document.querySelector("#linkArea").hidden = false;
+
+
+  setDefaultParameter();
+
   tables = [
     document.querySelector("#tonTable"),
     document.querySelector("#nanTable"),
@@ -23,12 +40,6 @@ window.addEventListener('load', function(){
   }
 })
 
-// 数値用の比較関数を定義
-// これは数字が高い順に並べる。逆は「a - b」
-function compareNumbers(a, b) {
-  return b - a;
-}
-
 //ボタンを押した時の処理
 function rankcheck(){
 
@@ -37,11 +48,11 @@ function rankcheck(){
     while (tables[i].rows.length > 0) tables[i].deleteRow(0);
   }
 
-  var array = [
-    document.getElementById('toncha').value,
-    document.getElementById('nancha').value,
-    document.getElementById('syacha').value,
-    document.getElementById('peicha').value
+  var startPoints = [
+    document.getElementById('tonchaPoint').value,
+    document.getElementById('nanchaPoint').value,
+    document.getElementById('syachaPoint').value,
+    document.getElementById('peichaPoint').value
   ];
 
   var playerName = [
@@ -60,7 +71,7 @@ function rankcheck(){
     kyoutaku = 0;
   }
 
-  var ranks = rankcall(array);
+  var ranks = rankcall(startPoints);
 
   //親の場所。pointChangeの最初の引数に仕様。標準は北家スタート(3)
   var oyaPosition = 3;
@@ -150,7 +161,7 @@ function rankcheck(){
 
 
       for(l=0;l<4;l++){
-        var agari = pointChange(oyaPosition,k,l,i,array,honba,kyoutaku);
+        var agari = pointChange(oyaPosition,k,l,i,startPoints,honba,kyoutaku);
 
         var afterRank = rankcall(agari);
 
@@ -207,16 +218,6 @@ function rankcheck(){
             allRon = ronArray[k];
           }
         }
-        //console.log(allRon);
-        // if (allRon != -1){
-        //   if(i == oyaPosition){
-        //     textData += "　　どこからでも" + pointList(allRon,'oyaron')
-        //       + "点のロン上がり<br>";
-        //   }else{
-        //     textData += "　　どこからでも" + pointList(allRon,'koron')
-        //       + "点のロン上がり<br>";;
-        //   }
-        // }
 
         //デバサイ
         var debasai = 100;
@@ -266,6 +267,36 @@ function rankcheck(){
   textArea.innerHTML = textData;
 
 
+}
+
+//URL生成ボタン
+function makeLink(){
+  //現在のurlを取得
+  var url = location.origin + location.hostname + location.pathname;
+
+  //テキストボックスのid名を配列で取得
+  var idArray = inputIdElements();
+
+  //最初に追加されたidか確認するためのフラグを初期化
+  var firstFlag = true;
+
+  for (var i = 0, len = idArray.length; i < len; ++i){
+    if(document.querySelector("#"+idArray[i]).value){
+      if (firstFlag){
+        url += "?";
+        firstFlag = false;
+      }else{
+        url += "&";
+      }
+      url += idArray[i] + "="
+          + encodeURIComponent(document.querySelector("#"+idArray[i]).value);
+    }
+  }
+
+  document.querySelector("#linkURL").value = url;
+  document.querySelector("#linkArea").hidden = false;
+  document.querySelector("#makedLink").innerHTML = '<a href="'
+    + url + '">このページのリンク</a>';
 }
 
 //点数の変動関数
@@ -340,6 +371,17 @@ function pointChange(oyaPosition,winner,target,pointListIndex,points,honba,kyout
   }
 
   return afterPoints;
+}
+
+/**
+ * 数値用の比較関数を定義
+ * これは数字が高い順に並べる。逆は「a - b」
+ * @param  {Number} a 比較対象数字1
+ * @param  {Number} b 比較対象数字2
+ * @return {Number}   結果
+ */
+function compareNumbers(a, b) {
+  return b - a;
 }
 
 //順位判定関数
@@ -422,9 +464,73 @@ function pointList(index,type){
     return points[index][type];
   }
 
-
 }
 
-//console.log(points[0]['display'] + points[0]['oyaron']);
 
-//console.log(pointList(0,'display') + pointList(1,'oyaron'));
+//文字入力欄が変化した時に呼ばれる関数
+// function chageInputText(){
+//   console.log('test');
+// }
+
+//デフォルト値をURLのパラメータから取得する関数
+function setDefaultParameter(){
+  var idArray = inputIdElements();
+
+  var paramArray = getURLParameter();
+
+  if(paramArray){
+    for (var i = 0, len = idArray.length; i < len; ++i){
+      if(paramArray[idArray[i]]){
+        var element = document.querySelector("#"+idArray[i]);
+        element.value = decodeURIComponent(paramArray[idArray[i]]);
+      }
+    }
+  }
+}
+
+//テキストボックスのid名の配列を返す関数
+function inputIdElements(){
+  var idArray = [
+    'tonchaPoint',
+    'nanchaPoint',
+    'syachaPoint',
+    'peichaPoint',
+    'tonchaName',
+    'nanchaName',
+    'syachaName',
+    'peichaName',
+    'honba',
+    'kyoutaku',
+    'mode',
+    'title'
+  ];
+  return idArray;
+}
+
+/**
+ * URLパラメータを取得して連想配列で返す
+ * @return {Array} URLパラメータを格納した連想配列
+ */
+function getURLParameter(){
+      //URLパラメータの?を除いた２文字目以降を取得
+  var urlParam = location.search.substring(1),
+      //パラメータを格納する連想配列
+      paramArray = [];
+
+  if(urlParam){
+    //&が含まれていたら&で分割（この時点では=で繋がっている）
+    var params = urlParam.split('&');
+
+    // 用意した配列にパラメータを格納
+    for (i = 0; i < params.length; i++) {
+      var paramItems = params[i].split('=');
+      paramArray[paramItems[0]] = paramItems[1];
+    }
+
+    return paramArray;
+
+  }
+
+  return null;
+
+}
