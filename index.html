@@ -6,8 +6,16 @@
     <script type="text/javascript" src="./src/mct.js"></script>
   </head>
   <body>
+    <input type="button" value="URL生成" onclick="makeLink();"><br>
+    <div id="linkArea">
+      URL:
+      <input type="text" id="linkURL" name="" value="">
+      <div id="makedLink"></div>
+    </div>
     モード：
     <input type="text" id="mode" name="" value=""><br>
+    タイトル：
+    <input type="text" id="title" name="" value="" tabindex="1"><br>
     本場数：
     <input type="number" id="honba" name="" value="" tabindex="1"><br>
     供託数：

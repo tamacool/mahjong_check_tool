@@ -14,13 +14,9 @@ var tables = [];
  */
 window.addEventListener('load', function(){
 
-  var paramArray;
+  document.querySelector("#linkArea").hidden = true;
+  //document.querySelector("#linkArea").hidden = false;
 
-  // inputMode = document.querySelector("#mode");
-  // paramArray = getURLParameter();
-  // if(paramArray && paramArray.mode){
-  //   inputMode.value = decodeURIComponent(paramArray.mode);
-  // }
 
   setDefaultParameter();
 
@@ -60,7 +56,7 @@ function rankcheck(){
   ];
 
   var playerName = [
-    document.getElementById('tonchaPoint').value,
+    document.getElementById('tonchaName').value,
     document.getElementById('nanchaName').value,
     document.getElementById('syachaName').value,
     document.getElementById('peichaName').value
@@ -222,16 +218,6 @@ function rankcheck(){
             allRon = ronArray[k];
           }
         }
-        //console.log(allRon);
-        // if (allRon != -1){
-        //   if(i == oyaPosition){
-        //     textData += "　　どこからでも" + pointList(allRon,'oyaron')
-        //       + "点のロン上がり<br>";
-        //   }else{
-        //     textData += "　　どこからでも" + pointList(allRon,'koron')
-        //       + "点のロン上がり<br>";;
-        //   }
-        // }
 
         //デバサイ
         var debasai = 100;
@@ -281,6 +267,36 @@ function rankcheck(){
   textArea.innerHTML = textData;
 
 
+}
+
+//URL生成ボタン
+function makeLink(){
+  //現在のurlを取得
+  var url = location.origin + location.hostname + location.pathname;
+
+  //テキストボックスのid名を配列で取得
+  var idArray = inputIdElements();
+
+  //最初に追加されたidか確認するためのフラグを初期化
+  var firstFlag = true;
+
+  for (var i = 0, len = idArray.length; i < len; ++i){
+    if(document.querySelector("#"+idArray[i]).value){
+      if (firstFlag){
+        url += "?";
+        firstFlag = false;
+      }else{
+        url += "&";
+      }
+      url += idArray[i] + "="
+          + encodeURIComponent(document.querySelector("#"+idArray[i]).value);
+    }
+  }
+
+  document.querySelector("#linkURL").value = url;
+  document.querySelector("#linkArea").hidden = false;
+  document.querySelector("#makedLink").innerHTML = '<a href="'
+    + url + '">このページのリンク</a>';
 }
 
 //点数の変動関数
@@ -450,21 +466,15 @@ function pointList(index,type){
 
 }
 
+
+//文字入力欄が変化した時に呼ばれる関数
+// function chageInputText(){
+//   console.log('test');
+// }
+
 //デフォルト値をURLのパラメータから取得する関数
 function setDefaultParameter(){
-  var idArray = [
-    'tonchaPoint',
-    'nanchaPoint',
-    'syachaPoint',
-    'peichaPoint',
-    'tonchaName',
-    'nenchaName',
-    'syachaName',
-    'peichaName',
-    'honba',
-    'kyoutaku',
-    'mode'
-  ];
+  var idArray = inputIdElements();
 
   var paramArray = getURLParameter();
 
@@ -476,6 +486,25 @@ function setDefaultParameter(){
       }
     }
   }
+}
+
+//テキストボックスのid名の配列を返す関数
+function inputIdElements(){
+  var idArray = [
+    'tonchaPoint',
+    'nanchaPoint',
+    'syachaPoint',
+    'peichaPoint',
+    'tonchaName',
+    'nanchaName',
+    'syachaName',
+    'peichaName',
+    'honba',
+    'kyoutaku',
+    'mode',
+    'title'
+  ];
+  return idArray;
 }
 
 /**
