@@ -272,7 +272,7 @@ function rankcheck(){
 //URL生成ボタン
 function makeLink(){
   //現在のurlを取得
-  var url = location.origin + location.hostname + location.pathname;
+  var url = location.origin  + location.pathname;
 
   //テキストボックスのid名を配列で取得
   var idArray = inputIdElements();
