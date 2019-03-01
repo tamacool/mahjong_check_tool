@@ -14,7 +14,7 @@
       <div id="makedLink"></div>
     </div>
     モード：
-    <input type="text" id="mode" name="" value=""><br>
+    <select id="mode" onchange="changeMode()"></select><br>
     タイトル：
     <input type="text" id="title" name="" value="" tabindex="1"><br>
     本場数：
@@ -22,16 +22,21 @@
     供託数：
     <input type="number" id="kyoutaku" name="" value="" tabindex="2"><br>
     名前：　　　　　　　　点棒：<br>
-    <input type="text" id="tonchaName" name="" value="">
+    <input type="text" id="tonchaName" name="" value="" list="names">
+    <select id="tonchaNameSelect" onchange="changeName('tonchaName')" hidden></select>
     <input type="number" step="100" id="tonchaPoint" name="" value="" tabindex="3"><br>
-    <input type="text" id="nanchaName" name="" value="">
+    <input type="text" id="nanchaName" name="" value="" list="names">
+    <select id="nanchaNameSelect" onchange="changeName('nanchaName')" hidden></select>
     <input type="number" step="100" id="nanchaPoint" name="" value="" tabindex="4"><br>
-    <input type="text" id="syachaName" name="" value="">
+    <input type="text" id="syachaName" name="" value="" list="names">
+    <select id="syachaNameSelect" onchange="changeName('syachaName')" hidden></select>
     <input type="number" step="100" id="syachaPoint" name="" value="" tabindex="5"><br>
-    <input type="text" id="peichaName" name="" value="">
+    <input type="text" id="peichaName" name="" value="" list="names">
+    <select id="peichaNameSelect" onchange="changeName('peichaName')" hidden></select>
     <input type="number" step="100" id="peichaPoint" name="" value="" tabindex="6"><br>
 
-    <input type="button" value="確認開始" onclick="rankcheck();" tabindex="7">
+    <input type="button" id="checkButton" value="確認開始" onclick="rankcheck();" tabindex="7">
+    <input type="text" id="errorMessage" name="" value="" readonly><br>
 
     <br>
     <div id="textArea"></div>
@@ -39,5 +44,7 @@
     <table id="nanTable" style=" margin: 2px auto; border-collapse: collapse;  width:100%;table-layout : fixed;"></table>
     <table id="syaTable" style=" margin: 2px auto; border-collapse: collapse;  width:100%;table-layout : fixed;"></table>
     <table id="peiTable" style=" margin: 2px auto; border-collapse: collapse;  width:100%;table-layout : fixed;"></table>
+    <datalist id="names">
+    </datalist>
   </body>
 </html>

@@ -7,5 +7,9 @@
 }
 
 #tonchaName, #nanchaName, #syachaName, #peichaName{
-  width: 60px;
+  width: 80px;
+}
+
+#errorMessage{
+  width: 300px;
 }
