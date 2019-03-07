@@ -17,7 +17,16 @@ window.addEventListener('load', function(){
   document.querySelector("#linkArea").hidden = true;
   //document.querySelector("#linkArea").hidden = false;
 
+  //subFormをデフォルトで隠す
+  document.querySelector("#subForm").hidden = true;
 
+  //モードセレクトボックスの初期化
+  setupMode();
+
+  //datalistの初期化
+  //setDatalistNames();
+
+  //URLからデフォルト値を取得
   setDefaultParameter();
 
   tables = [
@@ -501,7 +510,7 @@ function inputIdElements(){
     'peichaName',
     'honba',
     'kyoutaku',
-    'mode',
+    //'mode',
     'title'
   ];
   return idArray;
@@ -532,5 +541,377 @@ function getURLParameter(){
   }
 
   return null;
+
+}
+
+
+//モードのセレクトボックスをセット
+function setupMode(){
+  var modeLists = [
+    {val:"normal", txt:"ノーマル"},
+    {val:"ml2018f", txt:"Mリーグ2018ファイナル"}
+  ];
+
+  //連想配列をループ処理で値を取り出してセレクトボックスにセットする
+  for(var i=0;i<modeLists.length;i++){
+    let op = document.createElement("option");
+    op.value = modeLists[i].val;  //value値
+    op.text = modeLists[i].txt;   //テキスト値
+    document.getElementById("mode").appendChild(op);
+  }
+  //document.getElementById("mode").value = "ml2018f";
+}
+
+//datalistのnamesの部分の初期化(現在未使用)
+function setDatalistNames(){
+  //すでにidがnamesのdatalistの子要素をすべて削除
+  var idNames = document.getElementById("names");
+  while(idNames.lastChild){
+		idNames.removeChild(idNames.lastChild);
+	}
+
+  var nameLists = [
+    "園田","村上","たろう",
+    "亜樹","滝沢","勝又",
+    "寿人","高宮","前原",
+    "多井","白鳥","松本"
+  ];
+
+  //連想配列をループ処理で値を取り出してセレクトボックスにセットする
+  for(var i=0;i<nameLists.length;i++){
+    let op = document.createElement("option");
+    op.value = nameLists[i];  //value値
+    idNames.appendChild(op);
+  }
+
+}
+
+//モードをセレクトボックスでチェンジした時の処理
+function changeMode(){
+  var mode = document.getElementById("mode").value;
+  console.log(mode);
+  //document.querySelector("#nanchaName").hidden = true;
+  switch (mode){
+    case "ml2018f":
+      changeModeMl2018f();
+      break;
+    case "normal":
+      changeModeNormal();
+      break;
+  }
+
+}
+
+//モードをml2018fにした時の処理
+function changeModeMl2018f(){
+
+  //subFormを出す
+  document.querySelector("#subForm").hidden = false;
+
+  //console.log("test");
+  var inputNames = [
+    "tonchaName",
+    "nanchaName",
+    "syachaName",
+    "peichaName"
+  ];
+
+  var nameLists = [
+    "","園田","村上","たろう",
+    "亜樹","滝沢","勝又",
+    "寿人","高宮","前原",
+    "多井","白鳥","松本"
+  ];
+
+  //セレクトボックスを表示させてテキストボックスを隠す
+  for(var i=0;i<4;i++){
+    document.getElementById(inputNames[i]).hidden = true;
+    document.getElementById(inputNames[i]+"Select").hidden = false;
+
+    //すでにセレクトボックスにある子要素をすべて削除
+    var idNames = document.getElementById(inputNames[i]+"Select");
+    while(idNames.lastChild){
+  		idNames.removeChild(idNames.lastChild);
+  	}
+
+    //連想配列をループ処理で値を取り出してセレクトボックスにセットする
+    for(var l=0;l<nameLists.length;l++){
+      let op = document.createElement("option");
+      op.value = nameLists[l];  //value値
+      if(nameLists[l]){
+        op.text = nameLists[l] + " (" + checkTeamName(nameLists[l]) + ")";
+      }else{
+        op.text ="";
+      }
+
+      document.getElementById(inputNames[i]+"Select").appendChild(op);
+    }
+
+    //テキストボックスから反映
+    var teamName = checkTeamName(document.getElementById(inputNames[i]).value);
+    if(teamName){
+      document.getElementById(inputNames[i]+"Select").value =
+        document.getElementById(inputNames[i]).value;
+    }
+  }
+
+  //エラーメッセージ処理
+  changeName();
+
+  //チームポイント表の枠を作成
+  setTeamTable();
+}
+
+//チームポイント表の枠を作成
+function setTeamTable(){
+  var teamTable = document.getElementById("teamTable");
+
+  // セルの内周余白量を設定
+  teamTable.cellPadding = "5";
+
+  // セルの外周余白量を設定
+  teamTable.cellSpacing = "1";
+
+  // テーブル内の線ルールを設定　すべて
+  teamTable.rules = "all";
+  teamTable.border = "1";
+
+  //テーブル初期化
+  while (teamTable.rows.length > 0) teamTable.deleteRow(0);
+
+  //見出し用の行を追加
+  var headTr=teamTable.insertRow(-1);
+
+  var th0 = headTr.insertCell(-1),
+      th1 = headTr.insertCell(-1),
+      th2 = headTr.insertCell(-1),
+      th3 = headTr.insertCell(-1);
+
+  th0.innerHTML = "順位";
+  th1.innerHTML = "チーム名";
+  th2.innerHTML = "チームポイント";
+  th3.innerHTML = "ポイント差";
+
+  //見出しはすべてセンターに
+  th0.classList.add("textCenter");
+  th1.classList.add("textCenter");
+  th2.classList.add("textCenter");
+  th3.classList.add("textCenter");
+
+  //セルをループで作る
+  for(var i=0;i<4;i++){
+    //一行増やす
+    var tr=teamTable.insertRow(-1);
+
+    var td0 = tr.insertCell(-1),
+        td1 = tr.insertCell(-1),
+        td2 = tr.insertCell(-1),
+        td3 = tr.insertCell(-1);
+
+    //セルのid名をteamTableCell[列][行]に設定
+    td0.id = "teamTableCell0" + i;
+    td1.id = "teamTableCell1" + i;
+    td2.id = "teamTableCell2" + i;
+    td3.id = "teamTableCell3" + i;
+
+    td0.classList.add("textCenter");
+    td1.classList.add("textCenter");
+    td2.classList.add("textRight");
+    td3.classList.add("textRight");
+
+  }
+
+  teamTableRanking();
+}
+
+//チームポイント表を計算
+function teamTableRanking(){
+  //チームポイントを取得する。null2zeroで数字以外のものは0として扱う
+  var teamPoints = [
+    null2zero(document.getElementById("teamPoint0").value),
+    null2zero(document.getElementById("teamPoint1").value),
+    null2zero(document.getElementById("teamPoint2").value),
+    null2zero(document.getElementById("teamPoint3").value)
+  ];
+
+  //同順位込みの順位配列
+  var ranks = rankcall(teamPoints);
+
+  var spacers = [0,0,0,0]; //添字0から1位の人数、2位の人数…をカウント
+  var orders = [0,0,0,0]; //添字0からチーム名順で表示行位置（0からの整数）を記録
+
+  //ループでorders配列の値を代入
+  for(var i=0; i<4; i++){
+    var rankIndex = ranks[i]-1; //そのままだと順位は1位から始まるので扱いやすいように-1
+    orders[i] = rankIndex + spacers[rankIndex];
+    spacers[rankIndex] +=1;
+  }
+
+  //チーム名の配列
+  var teamNames = ["ドリブンズ","EX風林火山","麻雀格闘倶楽部","アベマズ"];
+
+  //ソート前と後をそれぞれ格納するために値渡しにする
+  var sortedArray = teamPoints.slice();
+  //チームポイントをソートする
+  sortedArray.sort(compareNumbers);
+
+  //表への書き込み
+  for(var i=0; i<4; i++){
+    var row = orders[i]; //書き込む行番号
+    //順位
+    document.getElementById("teamTableCell0"+row).innerHTML = ranks[i];
+    //チーム名
+    document.getElementById("teamTableCell1"+row).innerHTML = teamNames[i];
+    //チームポイント
+    var teamPointsNumber = Number(teamPoints[i]);
+    document.getElementById("teamTableCell2"+row).innerHTML = teamPointsNumber.toFixed(1);
+
+    if(i>0){
+      //ポイント差の変数
+      var difference = sortedArray[i-1] - sortedArray[i];
+      //小数点の引き算は誤差が出るので修正
+      // difference = Math.round(difference * 10);
+      // difference = difference/10;
+
+      //rowの位置と無関係に2行目から順にポイント差を書き込む
+      document.getElementById("teamTableCell3"+i).innerHTML = difference.toFixed(1);
+    }
+  }
+
+}
+
+//汎用関数
+//nullや数字じゃない数値が入った場合は0として返す関数。数字だったら、そのまま数字を返す。
+function null2zero(number){
+  if( isNaN(number)){
+    number = 0;
+  }
+  if(!number){
+    number = 0;
+  }
+  return number;
+}
+
+//モードをnormalにした時の処理
+function changeModeNormal(){
+  //subFormを隠す
+  document.querySelector("#subForm").hidden = true;
+
+  var inputNames = [
+    "tonchaName",
+    "nanchaName",
+    "syachaName",
+    "peichaName"
+  ];
+
+  //セレクトボックスを隠してテキストボックスを表示
+  for(var i=0;i<4;i++){
+    document.getElementById(inputNames[i]).hidden = false;
+    document.getElementById(inputNames[i]+"Select").hidden = true;
+  }
+
+  //エラーメッセージを消して確認開始ボタンを押せるように
+  document.getElementById("errorMessage").value = "";
+
+  //条件確認ボタンを押せるようにする
+  document.getElementById("checkButton").disabled = false;
+}
+
+//引数に名前を入れると所属チームを返す関数
+function checkTeamName(name){
+  var names = [
+    "園田","村上","たろう",
+    "亜樹","滝沢","勝又",
+    "寿人","高宮","前原",
+    "多井","白鳥","松本"
+  ];
+
+  var teams = [
+    "ドリブンズ","ドリブンズ","ドリブンズ",
+    "EX風林火山","EX風林火山","EX風林火山",
+    "麻雀格闘倶楽部","麻雀格闘倶楽部","麻雀格闘倶楽部",
+    "アベマズ","アベマズ","アベマズ"
+  ];
+
+  //namesでnameの名前を検索して見つかったらの処理
+  if(names.indexOf(name) == -1){
+    return "";
+  }else{
+    return teams[names.indexOf(name)];
+  }
+
+}
+
+//セレクトボックスを変更した時の処理
+function changeName(place){
+  //セレクトボックスの変更で引数ありで呼び出した時にテキストボックスに反映させる
+  if(place){
+    if(document.getElementById(place+"Select").value){
+      document.getElementById(place).value =
+        document.getElementById(place+"Select").value;
+    }
+  }
+
+  //エラーチェック
+  //各チームのカウント
+  var teamCounts = [0,0,0,0];
+
+  //セレクトボックスの名前（"Select"抜き）
+  var inputNames = [
+    "tonchaName",
+    "nanchaName",
+    "syachaName",
+    "peichaName"
+  ];
+
+  for(var i=0; i<inputNames.length; i++){
+    var teamname = checkTeamName(document.getElementById(inputNames[i]+"Select").value);
+    switch (teamname) {
+      case "ドリブンズ":
+        teamCounts[0] += 1;
+        break;
+
+      case "EX風林火山":
+        teamCounts[1] += 1;
+        break;
+
+      case "麻雀格闘倶楽部":
+        teamCounts[2] += 1;
+        break;
+
+      case "アベマズ":
+        teamCounts[3] += 1;
+        break;
+
+      default:
+    }
+  }
+
+  var nullcheck = false;
+
+  for(var l=0; l<teamCounts.length; l++){
+    if(teamCounts[l] == 0){
+      nullcheck = true;
+    }
+  }
+
+  if(nullcheck){
+    document.getElementById("errorMessage").value =
+      "選択されていないチームがあります。";
+
+    //条件確認ボタンを押せないようにする
+    document.getElementById("checkButton").disabled = true;
+  }else{
+    document.getElementById("errorMessage").value =
+      "";
+
+    //条件確認ボタンを押せるようにする
+    document.getElementById("checkButton").disabled = false;
+  }
+
+}
+
+//チームランクテーブルの変更処理
+function teamRankTableChange(){
 
 }

@@ -1,0 +1,82 @@
+body{
+  background-color: #f5f5f5;
+}
+
+#honba{
+  width: 40px;
+}
+
+#kyoutaku{
+  width: 40px;
+}
+
+#tonchaName, #nanchaName, #syachaName, #peichaName{
+  width: 80px;
+}
+
+#tonchaPoint, #nanchaPoint, #syachaPoint, #peichaPoint{
+  width: 80px;
+  text-align: right;
+}
+
+#errorMessage{
+  width: 300px;
+}
+
+#header{
+  padding: 5px;
+  background-color: #000000;
+  color: #FFFFFF;
+  margin-bottom: 5px;
+}
+
+#forms{
+  display: flex;
+}
+
+#mainForm{
+  margin: 5px;
+  padding: 5px;
+  background-color: #e6e6fa;
+}
+
+#personalFroms{
+  display: flex;
+}
+
+#names, #points{
+  margin: 5px;
+  text-align: center;
+}
+
+#subForm{
+  margin: 5px;
+  padding: 5px;
+  background-color: #f0e68c;
+}
+
+#teamFroms{
+  display: flex;
+}
+
+#teamNames, #teamPoints{
+  margin: 5px;
+  text-align: center;
+}
+
+#teamName0, #teamName1, #teamName2, #teamName3{
+  width: 100px;
+}
+
+#teamPoint0, #teamPoint1, #teamPoint2, #teamPoint3{
+  width: 80px;
+  text-align: right;
+}
+
+.textCenter{
+  text-align: center;
+}
+
+.textRight{
+  text-align: right;
+}
