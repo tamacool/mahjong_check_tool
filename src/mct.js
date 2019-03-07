@@ -17,6 +17,9 @@ window.addEventListener('load', function(){
   document.querySelector("#linkArea").hidden = true;
   //document.querySelector("#linkArea").hidden = false;
 
+  //subFormをデフォルトで隠す
+  document.querySelector("#subForm").hidden = true;
+
   //モードセレクトボックスの初期化
   setupMode();
 
@@ -601,6 +604,10 @@ function changeMode(){
 
 //モードをml2018fにした時の処理
 function changeModeMl2018f(){
+
+  //subFormを出す
+  document.querySelector("#subForm").hidden = false;
+
   //console.log("test");
   var inputNames = [
     "tonchaName",
@@ -650,10 +657,146 @@ function changeModeMl2018f(){
 
   //エラーメッセージ処理
   changeName();
+
+  //チームポイント表の枠を作成
+  setTeamTable();
+}
+
+//チームポイント表の枠を作成
+function setTeamTable(){
+  var teamTable = document.getElementById("teamTable");
+
+  // セルの内周余白量を設定
+  teamTable.cellPadding = "5";
+
+  // セルの外周余白量を設定
+  teamTable.cellSpacing = "1";
+
+  // テーブル内の線ルールを設定　すべて
+  teamTable.rules = "all";
+  teamTable.border = "1";
+
+  //テーブル初期化
+  while (teamTable.rows.length > 0) teamTable.deleteRow(0);
+
+  //見出し用の行を追加
+  var headTr=teamTable.insertRow(-1);
+
+  var th0 = headTr.insertCell(-1),
+      th1 = headTr.insertCell(-1),
+      th2 = headTr.insertCell(-1),
+      th3 = headTr.insertCell(-1);
+
+  th0.innerHTML = "順位";
+  th1.innerHTML = "チーム名";
+  th2.innerHTML = "チームポイント";
+  th3.innerHTML = "ポイント差";
+
+  //見出しはすべてセンターに
+  th0.classList.add("textCenter");
+  th1.classList.add("textCenter");
+  th2.classList.add("textCenter");
+  th3.classList.add("textCenter");
+
+  //セルをループで作る
+  for(var i=0;i<4;i++){
+    //一行増やす
+    var tr=teamTable.insertRow(-1);
+
+    var td0 = tr.insertCell(-1),
+        td1 = tr.insertCell(-1),
+        td2 = tr.insertCell(-1),
+        td3 = tr.insertCell(-1);
+
+    //セルのid名をteamTableCell[列][行]に設定
+    td0.id = "teamTableCell0" + i;
+    td1.id = "teamTableCell1" + i;
+    td2.id = "teamTableCell2" + i;
+    td3.id = "teamTableCell3" + i;
+
+    td0.classList.add("textCenter");
+    td1.classList.add("textCenter");
+    td2.classList.add("textRight");
+    td3.classList.add("textRight");
+
+  }
+
+  teamTableRanking();
+}
+
+//チームポイント表を計算
+function teamTableRanking(){
+  //チームポイントを取得する。null2zeroで数字以外のものは0として扱う
+  var teamPoints = [
+    null2zero(document.getElementById("teamPoint0").value),
+    null2zero(document.getElementById("teamPoint1").value),
+    null2zero(document.getElementById("teamPoint2").value),
+    null2zero(document.getElementById("teamPoint3").value)
+  ];
+
+  //同順位込みの順位配列
+  var ranks = rankcall(teamPoints);
+
+  var spacers = [0,0,0,0]; //添字0から1位の人数、2位の人数…をカウント
+  var orders = [0,0,0,0]; //添字0からチーム名順で表示行位置（0からの整数）を記録
+
+  //ループでorders配列の値を代入
+  for(var i=0; i<4; i++){
+    var rankIndex = ranks[i]-1; //そのままだと順位は1位から始まるので扱いやすいように-1
+    orders[i] = rankIndex + spacers[rankIndex];
+    spacers[rankIndex] +=1;
+  }
+
+  //チーム名の配列
+  var teamNames = ["ドリブンズ","EX風林火山","麻雀格闘倶楽部","アベマズ"];
+
+  //ソート前と後をそれぞれ格納するために値渡しにする
+  var sortedArray = teamPoints.slice();
+  //チームポイントをソートする
+  sortedArray.sort(compareNumbers);
+
+  //表への書き込み
+  for(var i=0; i<4; i++){
+    var row = orders[i]; //書き込む行番号
+    //順位
+    document.getElementById("teamTableCell0"+row).innerHTML = ranks[i];
+    //チーム名
+    document.getElementById("teamTableCell1"+row).innerHTML = teamNames[i];
+    //チームポイント
+    var teamPointsNumber = Number(teamPoints[i]);
+    document.getElementById("teamTableCell2"+row).innerHTML = teamPointsNumber.toFixed(1);
+
+    if(i>0){
+      //ポイント差の変数
+      var difference = sortedArray[i-1] - sortedArray[i];
+      //小数点の引き算は誤差が出るので修正
+      // difference = Math.round(difference * 10);
+      // difference = difference/10;
+
+      //rowの位置と無関係に2行目から順にポイント差を書き込む
+      document.getElementById("teamTableCell3"+i).innerHTML = difference.toFixed(1);
+    }
+  }
+
+}
+
+//汎用関数
+//nullや数字じゃない数値が入った場合は0として返す関数。数字だったら、そのまま数字を返す。
+function null2zero(number){
+  if( isNaN(number)){
+    number = 0;
+  }
+  if(!number){
+    number = 0;
+  }
+  return number;
 }
 
 //モードをnormalにした時の処理
 function changeModeNormal(){
+  //subFormを隠す
+  document.querySelector("#subForm").hidden = true;
+
   var inputNames = [
     "tonchaName",
     "nanchaName",
@@ -765,5 +908,10 @@ function changeName(place){
     //条件確認ボタンを押せるようにする
     document.getElementById("checkButton").disabled = false;
   }
+
+}
+
+//チームランクテーブルの変更処理
+function teamRankTableChange(){
 
 }
