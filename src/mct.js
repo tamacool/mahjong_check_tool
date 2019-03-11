@@ -14,21 +14,6 @@ var tables = [];
  */
 window.addEventListener('load', function(){
 
-  document.querySelector("#linkArea").hidden = true;
-  //document.querySelector("#linkArea").hidden = false;
-
-  //subFormをデフォルトで隠す
-  document.querySelector("#subForm").hidden = true;
-
-  //モードセレクトボックスの初期化
-  setupMode();
-
-  //datalistの初期化
-  //setDatalistNames();
-
-  //URLからデフォルト値を取得
-  setDefaultParameter();
-
   tables = [
     document.querySelector("#tonTable"),
     document.querySelector("#nanTable"),
@@ -47,6 +32,23 @@ window.addEventListener('load', function(){
     tables[i].rules = "all";
     tables[i].border = "1";
   }
+
+  //URL生成エリアを隠す
+  document.querySelector("#linkArea").hidden = true;
+
+  //subFormをデフォルトで隠す
+  document.querySelector("#subForm").hidden = true;
+
+  //titleMl2018fを隠す
+  document.querySelector("#titleMl2018f").hidden = true;
+
+  //モードセレクトボックスの初期化
+  setupMode();
+
+  //URLからデフォルト値を取得
+  setDefaultParameter();
+
+
 })
 
 //ボタンを押した時の処理
@@ -495,6 +497,10 @@ function setDefaultParameter(){
       }
     }
   }
+
+  //モードチェンジを実行
+  changeMode();
+
 }
 
 //テキストボックスのid名の配列を返す関数
@@ -510,8 +516,13 @@ function inputIdElements(){
     'peichaName',
     'honba',
     'kyoutaku',
-    //'mode',
-    'title'
+    'mode',
+    'title',
+    'teamPoint0',
+    'teamPoint1',
+    'teamPoint2',
+    'teamPoint3',
+    'round'
   ];
   return idArray;
 }
@@ -600,6 +611,14 @@ function changeMode(){
       break;
   }
 
+  //テーブル初期化
+  for(i=0;i<4;i++){
+    while (tables[i].rows.length > 0) tables[i].deleteRow(0);
+  }
+
+  //結果表示テキストを消す
+  var textArea = document.querySelector("#textArea");
+  textArea.innerHTML="";
 }
 
 //モードをml2018fにした時の処理
@@ -607,6 +626,10 @@ function changeModeMl2018f(){
 
   //subFormを出す
   document.querySelector("#subForm").hidden = false;
+
+  //タイトル入力を消して試合数入力を出す
+  document.querySelector("#titleText").hidden = true;
+  document.querySelector("#titleMl2018f").hidden = false;
 
   //console.log("test");
   var inputNames = [
@@ -796,6 +819,10 @@ function null2zero(number){
 function changeModeNormal(){
   //subFormを隠す
   document.querySelector("#subForm").hidden = true;
+
+  //試合数入力を消してタイトル入力を出す
+  document.querySelector("#titleMl2018f").hidden = true;
+  document.querySelector("#titleText").hidden = false;
 
   var inputNames = [
     "tonchaName",

@@ -80,3 +80,7 @@ body{
 .textRight{
   text-align: right;
 }
+
+#round{
+  width: 30px;
+}
