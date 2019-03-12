@@ -4,22 +4,11 @@
  */
 
 /**
- * htmlページのtableタグのElementオブジェクトを配列で格納
- * @type {Array}
- */
-var tables = [];
-
-/**
  * htmlページをロード完了後に呼び出される関数
  */
 window.addEventListener('load', function(){
 
-  tables = [
-    document.querySelector("#tonTable"),
-    document.querySelector("#nanTable"),
-    document.querySelector("#syaTable"),
-    document.querySelector("#peiTable")
-  ];
+  var tables = resultTables();
 
   for (var i=0; i<tables.length; i++){
     // セルの内周余白量を設定
@@ -28,7 +17,7 @@ window.addEventListener('load', function(){
     // セルの外周余白量を設定
     tables[i].cellSpacing = "1";
 
-    // テーブル内の線ルールを設定　すべて
+    // テーブル内の線ルールを設定 すべて
     tables[i].rules = "all";
     tables[i].border = "1";
   }
@@ -53,6 +42,8 @@ window.addEventListener('load', function(){
 
 //ボタンを押した時の処理
 function rankcheck(){
+  //表示するテーブルの配列を初期化
+  var tables = resultTables();
 
   //テーブル初期化
   for(i=0;i<4;i++){
@@ -106,9 +97,6 @@ function rankcheck(){
       }
     }
   }
-
-  //console.log(rankChangePoints);
-
 
   for(k=0;k<4;k++){
 
@@ -169,8 +157,6 @@ function rankcheck(){
           + "(" + pointList(i,'display') + ")";
       }
 
-
-
       for(l=0;l<4;l++){
         var agari = pointChange(oyaPosition,k,l,i,startPoints,honba,kyoutaku);
 
@@ -191,10 +177,7 @@ function rankcheck(){
     }
   }
 
-  console.log(rankChangePoints);
-
   var textArea = document.querySelector("#textArea");
-  //textArea.innerHTML = "test";
 
   //リザルト表示処理
   var textData = "";
@@ -220,7 +203,6 @@ function rankcheck(){
         var ronArray = rankChangePoints[i][l].slice();
         //ツモの部分を排除
         ronArray.splice(i,1);
-        console.log(ronArray);
 
         //どこからでもロン上がり条件
         var allRon = -1;
@@ -237,7 +219,7 @@ function rankcheck(){
             debasai = ronArray[k];
           }
         }
-        //console.log(debasai);
+
         if (debasai != 100){
           var ronPlayers = [];
           var debasaiArray = rankChangePoints[i][l].slice();
@@ -261,7 +243,6 @@ function rankcheck(){
             }
           }
 
-
           if(i == oyaPosition){
             textData += "　　" + ronPlayers + "からなら" + pointList(debasai,'oyaron')
               + "点のロン上がり<br>";
@@ -276,8 +257,6 @@ function rankcheck(){
   }
 
   textArea.innerHTML = textData;
-
-
 }
 
 //URL生成ボタン
@@ -477,12 +456,6 @@ function pointList(index,type){
 
 }
 
-
-//文字入力欄が変化した時に呼ばれる関数
-// function chageInputText(){
-//   console.log('test');
-// }
-
 //デフォルト値をURLのパラメータから取得する関数
 function setDefaultParameter(){
   var idArray = inputIdElements();
@@ -570,7 +543,6 @@ function setupMode(){
     op.text = modeLists[i].txt;   //テキスト値
     document.getElementById("mode").appendChild(op);
   }
-  //document.getElementById("mode").value = "ml2018f";
 }
 
 //datalistのnamesの部分の初期化(現在未使用)
@@ -594,14 +566,12 @@ function setDatalistNames(){
     op.value = nameLists[i];  //value値
     idNames.appendChild(op);
   }
-
 }
 
 //モードをセレクトボックスでチェンジした時の処理
 function changeMode(){
   var mode = document.getElementById("mode").value;
   console.log(mode);
-  //document.querySelector("#nanchaName").hidden = true;
   switch (mode){
     case "ml2018f":
       changeModeMl2018f();
@@ -631,7 +601,6 @@ function changeModeMl2018f(){
   document.querySelector("#titleText").hidden = true;
   document.querySelector("#titleMl2018f").hidden = false;
 
-  //console.log("test");
   var inputNames = [
     "tonchaName",
     "nanchaName",
@@ -792,9 +761,6 @@ function teamTableRanking(){
     if(i>0){
       //ポイント差の変数
       var difference = sortedArray[i-1] - sortedArray[i];
-      //小数点の引き算は誤差が出るので修正
-      // difference = Math.round(difference * 10);
-      // difference = difference/10;
 
       //rowの位置と無関係に2行目から順にポイント差を書き込む
       document.getElementById("teamTableCell3"+i).innerHTML = difference.toFixed(1);
@@ -941,4 +907,16 @@ function changeName(place){
 //チームランクテーブルの変更処理
 function teamRankTableChange(){
 
+}
+
+//結果表示用のテーブルのElementを返す関数
+function resultTables(){
+  var tables = [
+    document.querySelector("#tonTable"),
+    document.querySelector("#nanTable"),
+    document.querySelector("#syaTable"),
+    document.querySelector("#peiTable")
+  ];
+
+  return tables;
 }
