@@ -582,6 +582,7 @@ function changeMode(){
   }
 
   //テーブル初期化
+  var tables = resultTables();
   for(i=0;i<4;i++){
     while (tables[i].rows.length > 0) tables[i].deleteRow(0);
   }
